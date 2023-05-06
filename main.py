@@ -143,7 +143,7 @@ class Main(tk.Tk):
                 self.__btns[2]["text"] = "Отобразить значения уравнения на плоскости"
                 self.input_points["text"] = "Рассчитать значения во множестве точек x1, xk с шагом:"
                 if not self.is_packed(self.__points[2][0]):
-                    [self.__unvisible_packed_widget(widget) for widget in self.__points[2]]
+                    [self.__visible_packed_widget(widget) for widget in self.__points[2]]
             if not dont_update:
                 self.x0.set(" ".join(map(str, self.data.get_min_x())))
                 self.xk.set(" ".join(map(str, self.data.get_max_x())))
@@ -223,8 +223,12 @@ class Main(tk.Tk):
     def geometry(self):
         screen_width = int(self.winfo_screenwidth() // 1.5)
         screen_height = int(self.winfo_screenheight() // 1.5)
-        super().geometry(f"{screen_width + 100}x{screen_height}+"
-                         f"{int(int(screen_width) * 1.5 // 5 - 50)}+{int(int(screen_height) * 1.5 // 6)}")
+        if screen_width > 1060 and screen_height > 600:
+            super().geometry(f"{screen_width}x{screen_height}+"
+                             f"{int(int(screen_width) * 1.5 // 5)}+{int(int(screen_height) * 1.5 // 6)}")
+        else:
+            super().geometry("1060x600+265+150")
+        self.minsize(1060, 600)
 
     def __find_eq(self):
         if self.__btns[0]["state"] == tk.DISABLED:
@@ -247,9 +251,14 @@ class Main(tk.Tk):
             self.answer_str += f"Скорректированный коэффициент детерминации: {self.curve.adjR2:.4f}\n"
             best3adjr2 = self.curve.best_three_adjR2()
             names_x = self.curve.namesX
-            self.answer_str += "Лучшая тройка используемых столбцов:\n"
-            for el in best3adjr2:
-                self.answer_str += ", ".join(names_x[array(el[1])]) + f": {el[0]:.4f}\n"
+            if self.data.dim() > 2:
+                self.answer_str += "Лучшие три варианта используемых объясняющих переменных" \
+                                   " и их скорректированный R^2:\n"
+            else:
+                self.answer_str += "Остальные варианты используемых объясняющих переменных и " \
+                                   "их скорректированный R^2:\n"
+            for i, el in enumerate(best3adjr2, start=1):
+                self.answer_str += f"{i} вариант: " + ", ".join(names_x[array(el[1])]) + f": {el[0]:.4f}\n"
         self.answer.set(self.answer_str.strip())
         self.__btns[0].config(state=tk.DISABLED)
 
@@ -295,6 +304,8 @@ class Main(tk.Tk):
             self.answer_str += "\n"
         self.answer.set(self.answer_str.strip())
         self.__btns[1].config(state=tk.DISABLED)
+        if self.data.dim() > 2:
+            self.__old_answer_str_for_multiDim = self.answer_str[:]
 
     def __graph(self):
         self.__R_and_f()
@@ -315,10 +326,8 @@ class Main(tk.Tk):
             else:
                 x0 = array(list(map(lambda x: float(x.replace(",", ".", 1)), self.x0.get().split(" "))))
                 self.curve.points(x0).prediction()
-                if self.__old_answer_str_for_multiDim:
-                    self.answer_str = self.__old_answer_str_for_multiDim
-                self.__old_answer_str_for_multiDim = self.answer_str[:]
                 reg_y = self.curve.regression_xy["y"]
+                self.answer_str = self.__old_answer_str_for_multiDim[:]
                 self.answer_str += "Значение уравнения в точке {" + self.x0.get() + "}: " + f"{reg_y:.4f}\n"
                 self.answer_str += f"Доверительный интервал в точке: от {self.curve.rv_down:.4f} до" \
                                    f" {self.curve.rv_up:.4f}\n"
