@@ -25,7 +25,6 @@ from operator import itemgetter
 
 class OneDPolynomialRegression(AbstractOneDRegression):
 
-
     regression_x: ndarray
     regression_y: ndarray
     r: float
