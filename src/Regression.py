@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from src.abstracts.ABCRegression import *
 from numpy import (
     matrix,
     sum as npsum,
@@ -20,82 +20,11 @@ from numpy import (
     any as npany,
 )
 from scipy.optimize import curve_fit
-from pandas import read_csv
-from pathlib import Path
 from operator import itemgetter
 
 
-class Regression(ABC):
+class OneDPolynomialRegression(AbstractOneDRegression):
 
-    @staticmethod
-    def get_f_table(alpha, k1, k2):
-        alpha = alpha.replace(".", ",", 1)
-        pathtofile = Path(__file__).parent / "Таблицы распределений" / f"alpha {alpha}.csv"
-        if k1 > 30:
-            if 30 <= k1 <= 35:
-                k1 = 31
-            elif 35 < k1 < 50:
-                k1 = 32
-            elif 50 <= k1 <= 80:
-                k1 = 33
-            elif k1 > 80:
-                k1 = 34
-        if k2 > 30:
-            if 30 <= k2 <= 35:
-                k2 = 40
-            elif 35 < k2 <= 50:
-                k2 = 60
-            elif 50 <= k2 <= 150:
-                k2 = 120
-            else:
-                k2 = "4294967296"
-        try:
-            csv = read_csv(pathtofile, delimiter=";")
-        except FileNotFoundError:
-            return None
-        return float64(csv[str(k2)].iloc[k1 - 1].replace(",", '.'))
-
-    @abstractmethod
-    def __init__(self):
-        pass
-
-    @abstractmethod
-    def __str__(self):
-        pass
-
-    @abstractmethod
-    def points(self, p1, p2, step):
-        pass
-
-    @abstractmethod
-    def dim(self):
-        pass
-
-    @abstractmethod
-    def prediction(self):
-        pass
-
-    @abstractmethod
-    def correlation_f(self, alpha: str):
-        pass
-
-    @abstractmethod
-    def is_norm(self):
-        pass
-
-
-class OneDRegression(Regression, ABC):
-
-    @abstractmethod
-    def can_be_linear(self):
-        pass
-
-    @abstractmethod
-    def approx_error(self):
-        pass
-
-
-class OneDPolynomialRegression(OneDRegression):
 
     regression_x: ndarray
     regression_y: ndarray
@@ -164,7 +93,7 @@ class OneDPolynomialRegression(OneDRegression):
         return abs(self.f_fact) > self.f_table
 
     def prediction(self):
-        if self.f_fact > self.f_table:
+        if abs(self.f_fact) > self.f_table:
             mean_x = mean(self.x)
             y = self._function_points(self.x)
             pred = sqrt(self.f_table * (1/self.k + (self.regression_x - mean_x)**2/npsum((self.x - mean_x)**2)) *
@@ -271,22 +200,7 @@ class OneDHyperbolaRegression(OneDPolynomialRegression):
         return f"{self.coeffs[0]:.2f}+{self.coeffs[1]:.2f}/x".replace("+-", "-", 1)
 
 
-class MultiplyDRegression(Regression, ABC):
-
-    @abstractmethod
-    def get_used_variables(self):
-        pass
-
-    @abstractmethod
-    def get_unused_variables(self):
-        pass
-
-    @abstractmethod
-    def best_three_adjR2(self):
-        pass
-
-
-class MultiplyDLinearRegression(MultiplyDRegression):
+class MultiplyDLinearRegression(AbstractMultiplyDRegression):
 
     f_table_all: float
     f_fact_all: float
@@ -321,7 +235,7 @@ class MultiplyDLinearRegression(MultiplyDRegression):
         self.coeffs = array([coeffs.item(i) for i in arange(self.m + 1)], dtype=float64)
         del coeffs
         self.f = array([npsum([self.coeffs[j] * self.data[j][i] for j in range(self.m)]) + self.coeffs[-1]
-                       for i in arange(self.n)])
+                        for i in arange(self.n)])
         syy = npsum(square(self.data[-1] - avy))
         self.se = npsum(square(self.data[-1] - self.f))
         self.r2 = 1 - self.se / syy
@@ -386,7 +300,7 @@ class MultiplyDLinearRegression(MultiplyDRegression):
     def params_is_norm(self):
         return not npany(array(self.f_fact_each) < self.f_table_each)
 
-    def points(self, p1, p2=None, step=10):
+    def points(self, p1, p2=None, step=15):
         if self.k - 1 <= 2:
             assert len(p1) == len(p2), "len(p1) != len(p2)"
             regression_x = linspace(p1, p2, step)
@@ -407,7 +321,7 @@ class MultiplyDLinearRegression(MultiplyDRegression):
         return self
 
     def prediction(self):
-        if not (self.f_table_all < self.f_fact_all and self.params_is_norm()):
+        if not self.f_table_all < self.f_fact_all:
             self.rv_up, self.rv_down, self.pred_down, self.pred_up = [self.regression_xy["y"]] * 4
             return
         reg_x = self.regression_xy["x"]
@@ -416,7 +330,7 @@ class MultiplyDLinearRegression(MultiplyDRegression):
         if self.k - 1 <= 2:
             D2 = array([[npsum(array([[(reg_x[i][k][m] - avx[i]) * (reg_x[j][k][m] - avx[j]) * self.__s.item(i, j)
                                       for i in range(self.m)] for j in range(self.m)])) * (self.n - 1)
-                         for k in range(10)] for m in range(10)])
+                         for k in range(15)] for m in range(15)])
         else:
             D2 = npsum(array([[(reg_x[i] - avx[i]) * (reg_x[j] - avx[j]) * self.__s.item(i, j)
                               for i in range(self.m)] for j in range(self.m)])) * (self.n - 1)

@@ -4,11 +4,10 @@ from pandas import (
     set_option
 )
 from pathlib import Path
+from src.abstracts import AbstractData
 
 
-class Data:
-
-    Xnames, Yname, x, y = None, None, None, None
+class Data(AbstractData):
 
     def __init__(self, io):
         set_option("display.max_rows", 20)
