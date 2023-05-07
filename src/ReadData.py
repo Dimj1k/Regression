@@ -4,7 +4,7 @@ from pandas import (
     set_option
 )
 from pathlib import Path
-from src.abstracts import AbstractData
+from .abstracts import AbstractData
 
 
 class Data(AbstractData):

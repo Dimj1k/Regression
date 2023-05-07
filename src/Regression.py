@@ -1,4 +1,4 @@
-from src.abstracts.ABCRegression import *
+from .abstracts.ABCRegression import *
 from numpy import (
     matrix,
     sum as npsum,
@@ -24,6 +24,7 @@ from operator import itemgetter
 
 
 class OneDPolynomialRegression(AbstractOneDRegression):
+
 
     regression_x: ndarray
     regression_y: ndarray

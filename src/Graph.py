@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from src.abstracts import Graph
+from .abstracts import Graph
 
 
 class OneDGraph(Graph):
