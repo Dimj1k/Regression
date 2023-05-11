@@ -18,13 +18,13 @@ from numpy import (
     log,
     ndarray,
     any as npany,
+    argwhere
 )
 from scipy.optimize import curve_fit
 from operator import itemgetter
 
 
 class OneDPolynomialRegression(AbstractOneDRegression):
-
 
     regression_x: ndarray
     regression_y: ndarray
@@ -93,28 +93,24 @@ class OneDPolynomialRegression(AbstractOneDRegression):
         return abs(self.f_fact) > self.f_table
 
     def prediction(self):
-        if abs(self.f_fact) > self.f_table:
-            mean_x = mean(self.x)
-            y = self._function_points(self.x)
-            pred = sqrt(self.f_table * (1/self.k + (self.regression_x - mean_x)**2/npsum((self.x - mean_x)**2)) *
-                        npsum((self.y - y)**2)/(self.k - 2))
-            rv = sqrt(self.f_table * (1 + 1/self.k + (self.regression_x - mean_x)**2/npsum((self.x - mean_x)**2)) *
-                      npsum((self.y - y)**2)/(self.k - 2))
-            del y, mean_x
-            self.pred_up = self.regression_y + pred
-            self.pred_down = self.regression_y - pred
-            self.rv_up = self.regression_y + rv
-            self.rv_down = self.regression_y - rv
-        else:
-            self.pred_up = self.regression_y
-            self.pred_down = self.regression_y
-            self.rv_up = self.regression_y
-            self.rv_down = self.regression_y
+        mean_x = mean(self.x)
+        y = self._function_points(self.x)
+        pred = sqrt(self.f_table * (1/self.k + (self.regression_x - mean_x)**2/npsum((self.x - mean_x)**2)) *
+                    npsum((self.y - y)**2)/(self.k - 2))
+        rv = sqrt(self.f_table * (1 + 1/self.k + (self.regression_x - mean_x)**2/npsum((self.x - mean_x)**2)) *
+                  npsum((self.y - y)**2)/(self.k - 2))
+        del y, mean_x
+        self.pred_up = self.regression_y + pred
+        self.pred_down = self.regression_y - pred
+        self.rv_up = self.regression_y + rv
+        self.rv_down = self.regression_y - rv
         return self
 
     def approx_error(self):
         y = self._function_points(self.x)
-        return f"{npsum(npabs(self.y - y) / y) / len(self.x) * 100:.4f} %"
+        indexes = array(list(set(argwhere(self.y != 0).flatten()) & set(argwhere(y != 0).flatten())))
+        f = self.y[indexes]
+        return f"{mean(npabs((f - y[indexes]) / f)) * 100:.4f} %"
 
     def dim(self):
         return 1
@@ -321,9 +317,6 @@ class MultiplyDLinearRegression(AbstractMultiplyDRegression):
         return self
 
     def prediction(self):
-        if not self.f_table_all < self.f_fact_all:
-            self.rv_up, self.rv_down, self.pred_down, self.pred_up = [self.regression_xy["y"]] * 4
-            return
         reg_x = self.regression_xy["x"]
         reg_y = self.regression_xy["y"]
         avx = array([self.data[i].mean() for i in range(self.m)])
