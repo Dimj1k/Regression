@@ -1,6 +1,4 @@
-from src.Regression import *
-from src.ReadData import *
-from src.Graph import *
+from src import *
 from functools import partial
 import tkinter as tk
 import tkinter.filedialog as filedialog
@@ -269,14 +267,14 @@ class Main(tk.Tk):
             self.__find_eq()
             self.__old_answer_str = self.answer_str[:]
         else:
-            self.answer_str = self.__old_answer_str
+            self.answer_str = self.__old_answer_str[:]
         sign = str(round(1 - float(self.alpha.get()), 2))
         if self.data.dim() == 1:
             self.curve.correlation_f(sign)
             self.answer_str += f"Коэффициент корреляции Пирсона: {self.curve.r:.4f}\n"
             if not self.curve.islinear:
-                self.answer_str += f"Коэффициент нелинейной кореляции: {self.curve.nonlin_r:.4f}\n"
-                self.answer_str += f"Разница между линейной и нелинейной корреляциями: {self.curve.can_be_linear()}\n"
+                self.answer_str += f"Коэффициент кореляции: {self.curve.nonlin_r:.4f}\n"
+                self.answer_str += f"Разница между корреляцией Пирсона: {self.curve.can_be_linear()}\n"
             self.answer_str += f"Коэффициент детерминации:" \
                                f" {self.curve.nonlin_r ** 2 if not self.curve.islinear else self.curve.r2:.4f}\n"
             self.answer_str += f"f-критерий: {self.curve.f_fact:.4f}\nf-критерий табличный: {self.curve.f_table:.4f}\n"
