@@ -61,15 +61,15 @@ class Regression(ABC):
     def is_norm(self):
         pass
 
+    @abstractmethod
+    def approx_error(self):
+        pass
+
 
 class AbstractOneDRegression(Regression, ABC):
 
     @abstractmethod
     def can_be_linear(self):
-        pass
-
-    @abstractmethod
-    def approx_error(self):
         pass
 
 
