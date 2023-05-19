@@ -309,8 +309,8 @@ class MultiplyDLinearRegression(AbstractMultiplyDRegression):
             self.regression_xy = {"x": regression_x, "y": regression_y}
         elif self.k - 1 > 2:
             self.regression_xy = {"x": regression_x,
-                                  "y": npsum([el1 * el2 for el1, el2 in zip(coeffs, regression_x)],
-                                             axis=0) + self.coeffs[-1]}
+                                  "y": npsum([el1 * el2 for el1, el2 in zip(coeffs, regression_x)], axis=0)
+                                       + self.coeffs[-1]}
         else:
             self.regression_xy = {"x": regression_x.flatten(),
                                   "y": (coeffs[0] * regression_x + self.coeffs[-1]).flatten()}
@@ -332,6 +332,15 @@ class MultiplyDLinearRegression(AbstractMultiplyDRegression):
         self.rv_up, self.rv_down = reg_y + rv, reg_y - rv
         pred = sqrt(self.f_table_each * (1 + 1 / self.n + D2 / (self.n - 1)) * sigma_sq)
         self.pred_up, self.pred_down = reg_y + pred, reg_y - pred
+
+    def approx_error(self):
+        x = self._tempname(self.variables, self.origdata)[:-1]
+        f = self.origdata.T[-1]
+        indexes = argwhere(f != 0).flatten()
+        coeffs = self.coeffs[:-1]
+        y = npsum([el1 * el2 for el1, el2 in zip(coeffs, x)], axis=0) + self.coeffs[-1]
+        f = f[indexes]
+        return f"{mean(npabs((f - y[indexes]) / f)) * 100:.4f} %"
 
     def dim(self):
         return self.m
