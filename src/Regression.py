@@ -108,7 +108,7 @@ class OneDPolynomialRegression(AbstractOneDRegression):
 
     def approx_error(self):
         y = self._function_points(self.x)
-        indexes = array(list(set(argwhere(self.y != 0).flatten()) & set(argwhere(y != 0).flatten())))
+        indexes = argwhere(self.y != 0).flatten()
         f = self.y[indexes]
         return f"{mean(npabs((f - y[indexes]) / f)) * 100:.4f} %"
 
@@ -291,7 +291,7 @@ class MultiplyDLinearRegression(AbstractMultiplyDRegression):
         return self.f_fact_all > self.f_table_all
 
     def get_f_fact_each(self):
-        return {f"x{var}": f_fact_var for var, f_fact_var in enumerate(self.f_fact_each)}
+        return {f"x{var}": f_fact_var for var, f_fact_var in enumerate(self.f_fact_each, start=1)}
 
     def params_is_norm(self):
         return not npany(array(self.f_fact_each) < self.f_table_each)
