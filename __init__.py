@@ -7,6 +7,7 @@ from tkinter.ttk import Combobox as tkCombobox
 
 
 class Main(tk.Tk):
+    
     data: Data
     regression: Regression
     graph: Graph
