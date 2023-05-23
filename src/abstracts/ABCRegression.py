@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from pandas import read_csv
+from numpy import array
 from pathlib import Path
 
 
@@ -7,6 +8,13 @@ class Regression(ABC):
 
     f_table: float
     f_fact: float
+    r: float
+    nonlin_r: float
+    r2: float
+    rv_up: array
+    rv_down: array
+    pred_up: array
+    pred_down: array
     
     @staticmethod
     def get_f_table(alpha, k1, k2):
@@ -78,6 +86,11 @@ class AbstractOneDRegression(Regression, ABC):
 
 class AbstractMultiplyDRegression(Regression, ABC):
 
+    f_table_all: float
+    f_fact_all: float
+    f_table_each: float
+    f_fact_each: list
+    
     @abstractmethod
     def get_used_variables(self):
         pass
