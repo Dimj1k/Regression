@@ -5,6 +5,9 @@ from pathlib import Path
 
 class Regression(ABC):
 
+    f_table: float
+    f_fact: float
+    
     @staticmethod
     def get_f_table(alpha, k1, k2):
         alpha = alpha.replace(".", ",", 1)
