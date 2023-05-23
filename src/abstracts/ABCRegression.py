@@ -90,6 +90,8 @@ class AbstractMultiplyDRegression(Regression, ABC):
     f_fact_all: float
     f_table_each: float
     f_fact_each: list
+    adjR2: float
+    adjR2arr: list
     
     @abstractmethod
     def get_used_variables(self):
