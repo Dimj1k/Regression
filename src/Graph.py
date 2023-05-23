@@ -38,14 +38,16 @@ class MultiplyDGraph(Graph):
         ax = fig.add_subplot(projection='3d')
         ax.scatter(*self.origdata.T, color='k', label="Ориг.")
         ax.plot_wireframe(*self.x_reg, self.y_reg, label=f"{self.pt_curve}", color="tomato")
-        if id(self.pt_curve.rv_up) != id(self.y_reg):
-            ax.plot_surface(*self.x_reg, self.pt_curve.rv_up, color="lime", alpha=0.5, label="Доверительный интервал")
-            ax.plot_surface(*self.x_reg, self.pt_curve.rv_down, color="lime", alpha=0.5)
-            ax.plot_surface(*self.x_reg, self.pt_curve.pred_up, color="aqua", alpha=0.3)
-            ax.plot_surface(*self.x_reg, self.pt_curve.pred_down, color="aqua", alpha=0.3, label="Прогноз")
+        l1 = ax.plot_surface(*self.x_reg, self.pt_curve.rv_up, color="lime", alpha=0.5,
+                             label="Доверительный интервал")
+        ax.plot_surface(*self.x_reg, self.pt_curve.rv_down, color="lime", alpha=0.5)
+        ax.plot_surface(*self.x_reg, self.pt_curve.pred_up, color="aqua", alpha=0.4)
+        l2 = ax.plot_surface(*self.x_reg, self.pt_curve.pred_down, color="aqua", alpha=0.4, label="Прогноз")
         names = self.pt_curve.get_used_variables()
         ax.set_xlabel(names[0])
         ax.set_ylabel(names[1] if len(names) == 2 else self.pt_curve.get_unused_variables()[0])
         ax.set_zlabel(self.pt_curve.nameY)
-        plt.legend()
+        l1._edgecolors2d, l1._facecolors2d = l1._edgecolor3d, l1._facecolor3d
+        l2._edgecolors2d, l2._facecolors2d = l2._edgecolor3d, l2._facecolor3d
+        ax.legend()
         plt.show()
