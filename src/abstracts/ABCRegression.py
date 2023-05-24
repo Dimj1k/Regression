@@ -106,6 +106,10 @@ class AbstractMultiplyDRegression(ABC):
         return get_f_table_func(alpha, k1, k2)
 
     @abstractmethod
+    def params_is_norm(self):
+        pass
+
+    @abstractmethod
     def __init__(self, xname, yname):
         pass
 
