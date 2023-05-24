@@ -40,6 +40,7 @@ class Data(AbstractData):
         self.Yname = self.data[choisen_y].name
         self.Xnames = data.columns
         self.x, self.y = data[self.Xnames], self.data[self.Yname]
+        del self.allData, self.allNames
 
     def names(self):
         return {**{f"x{i}": el for i, el in enumerate(self.Xnames, start=1)}, "y": self.Yname}

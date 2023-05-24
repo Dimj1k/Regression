@@ -28,17 +28,7 @@ class OneDPolynomialRegression(AbstractOneDRegression):
 
     regression_x: ndarray
     regression_y: ndarray
-    r: float
-    nonlin_r: float
-    r2: float
-    nonlin_r2: float
     diff: float
-    rv_up: ndarray
-    rv_down: ndarray
-    f_fact: float
-    f_table: float
-    pred_up: ndarray
-    pred_down: ndarray
 
     def names(self):
         return {"x": self.name_x, "y": self.name_y}
@@ -198,14 +188,6 @@ class OneDHyperbolaRegression(OneDPolynomialRegression):
 
 class MultiplyDLinearRegression(AbstractMultiplyDRegression):
 
-    f_table_all: float
-    f_fact_all: float
-    f_table_each: float
-    f_fact_each: list = []
-    rv_up: array
-    rv_down: array
-    pred_up: array
-    pred_down: array
     __s: matrix
 
     def _leastsquares(self):
