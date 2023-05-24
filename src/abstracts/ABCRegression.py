@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from pandas import read_csv
-from numpy import array
+from numpy import ndarray
 from pathlib import Path
 
 
@@ -11,10 +11,10 @@ class Regression(ABC):
     r: float
     nonlin_r: float
     r2: float
-    rv_up: array
-    rv_down: array
-    pred_up: array
-    pred_down: array
+    rv_up: ndarray
+    rv_down: ndarray
+    pred_up: ndarray
+    pred_down: ndarray
     
     @staticmethod
     def get_f_table(alpha, k1, k2):
@@ -41,11 +41,11 @@ class Regression(ABC):
         try:
             csv = read_csv(pathtofile, delimiter=";")
         except FileNotFoundError:
-            return None
+            return 4
         return float(csv[str(k2)].iloc[k1 - 1].replace(",", '.'))
 
     @abstractmethod
-    def __init__(self):
+    def __init__(self, x, y):
         pass
 
     @abstractmethod
