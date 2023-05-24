@@ -38,8 +38,7 @@ class MultiplyDGraph(Graph):
         ax = fig.add_subplot(projection='3d')
         ax.scatter(*self.origdata.T, color='k', label="Ориг.")
         ax.plot_wireframe(*self.x_reg, self.y_reg, label=f"{self.pt_curve}", color="tomato")
-        l1 = ax.plot_surface(*self.x_reg, self.pt_curve.rv_up, color="lime", alpha=0.5,
-                             label="Доверительный интервал")
+        l1 = ax.plot_surface(*self.x_reg, self.pt_curve.rv_up, color="lime", alpha=0.5, label="Доверительный интервал")
         ax.plot_surface(*self.x_reg, self.pt_curve.rv_down, color="lime", alpha=0.5)
         ax.plot_surface(*self.x_reg, self.pt_curve.pred_up, color="aqua", alpha=0.4)
         l2 = ax.plot_surface(*self.x_reg, self.pt_curve.pred_down, color="aqua", alpha=0.4, label="Прогноз")
