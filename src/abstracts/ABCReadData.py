@@ -6,8 +6,8 @@ class AbstractData(ABC):
 
     Xnames: list
     Yname: str
-    x: array
-    y: array
+    x: list
+    y: list
     allNames: list
     allData: list
 
