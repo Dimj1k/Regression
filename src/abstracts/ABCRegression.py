@@ -39,6 +39,7 @@ class AbstractOneDRegression(ABC):
     r: float
     nonlin_r: float
     r2: float
+    reg_x: ndarray
     reg_y: ndarray
     rv_up: ndarray
     rv_down: ndarray
@@ -95,7 +96,7 @@ class AbstractMultiplyDRegression(ABC):
     f_fact_all: float
     f_table_each: float
     f_fact_each: list
-    reg_y: ndarray
+    reg_xy: ndarray
     rv_up: ndarray
     rv_down: ndarray
     pred_up: ndarray

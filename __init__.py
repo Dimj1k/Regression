@@ -325,7 +325,7 @@ class Main(tk.Tk):
             else:
                 x0 = array(list(map(lambda x: float(x.replace(",", ".", 1)), self.x0.get().split(" "))))
                 self.curve.points(x0).prediction()
-                reg_y = self.curve.regression_xy["y"]
+                reg_y = self.curve.reg_xy["y"]
                 self.answer_str = self.__old_answer_str_for_multiDim[:]
                 self.answer_str += "Значение уравнения в точке {" + self.x0.get() + "}: " + f"{reg_y:.4f}\n"
                 self.answer_str += f"Доверительный интервал в точке: от {self.curve.rv_down:.4f} до" \

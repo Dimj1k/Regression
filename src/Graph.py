@@ -7,7 +7,7 @@ class OneDGraph(Graph):
     def __init__(self, curve):
         self.pt_curve = curve
         self.x_real, self.y_real = curve.x, curve.y
-        self.x_reg, self.y_reg = curve.regression_x, curve.regression_y
+        self.x_reg, self.y_reg = curve.reg_x, curve.reg_y
 
     def show(self):
         fig = plt.figure()
@@ -31,7 +31,7 @@ class MultiplyDGraph(Graph):
         self.pt_curve = curve
         self.origdata = curve.origdata
         self.variables = curve.variables
-        self.x_reg, self.y_reg = curve.regression_xy["x"], curve.regression_xy["y"]
+        self.x_reg, self.y_reg = curve.reg_xy["x"], curve.reg_xy["y"]
 
     def show(self):
         fig = plt.figure()

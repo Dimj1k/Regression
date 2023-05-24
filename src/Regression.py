@@ -16,7 +16,6 @@ from numpy import (
     meshgrid,
     abs as npabs,
     log,
-    ndarray,
     any as npany,
     argwhere
 )
@@ -25,10 +24,6 @@ from operator import itemgetter
 
 
 class OneDPolynomialRegression(AbstractOneDRegression):
-
-    regression_x: ndarray
-    regression_y: ndarray
-    diff: float
 
     def names(self):
         return {"x": self.name_x, "y": self.name_y}
@@ -55,8 +50,8 @@ class OneDPolynomialRegression(AbstractOneDRegression):
 
     def points(self, p1=None, p2=None, step=0.1):
         x = arange(p1, p2 + step, step=step) if p1 and p2 else arange(npmin(self.x), npmax(self.x) + step, step=step)
-        self.regression_x = x
-        self.regression_y = self._function_points(x)
+        self.reg_x = x
+        self.reg_y = self._function_points(x)
         return self
 
     def correlation_f(self, alpha: str):
@@ -85,15 +80,15 @@ class OneDPolynomialRegression(AbstractOneDRegression):
     def prediction(self):
         mean_x = mean(self.x)
         y = self._function_points(self.x)
-        pred = sqrt(self.f_table * (1/self.k + (self.regression_x - mean_x)**2/npsum((self.x - mean_x)**2)) *
+        pred = sqrt(self.f_table * (1/self.k + (self.reg_x - mean_x)**2/npsum((self.x - mean_x)**2)) *
                     npsum((self.y - y)**2)/(self.k - 2))
-        rv = sqrt(self.f_table * (1 + 1/self.k + (self.regression_x - mean_x)**2/npsum((self.x - mean_x)**2)) *
+        rv = sqrt(self.f_table * (1 + 1/self.k + (self.reg_x - mean_x)**2/npsum((self.x - mean_x)**2)) *
                   npsum((self.y - y)**2)/(self.k - 2))
         del y, mean_x
-        self.pred_up = self.regression_y + pred
-        self.pred_down = self.regression_y - pred
-        self.rv_up = self.regression_y + rv
-        self.rv_down = self.regression_y - rv
+        self.pred_up = self.reg_y + pred
+        self.pred_down = self.reg_y - pred
+        self.rv_up = self.reg_y + rv
+        self.rv_down = self.reg_y - rv
         return self
 
     def approx_error(self):
@@ -250,7 +245,7 @@ class MultiplyDLinearRegression(AbstractMultiplyDRegression):
         self.bestadjR2arr = sorted(zip(self.adjR2arr, self.varsarr), key=itemgetter(0), reverse=True)[0:4]
         self._attempment(_bad=False, _goodlst=self.bestadjR2arr[0])
         del self.adjR2arr[-1], self.varsarr[-1], self._s
-        self.regression_xy = None
+        self.reg_xy = None
 
     def best_three_adjR2(self):
         return list(map(lambda el: [el[0], el[1][0:-1]], self.bestadjR2arr[1:]))
@@ -280,7 +275,6 @@ class MultiplyDLinearRegression(AbstractMultiplyDRegression):
 
     def points(self, p1, p2=None, step=15):
         if self.k - 1 <= 2:
-            assert len(p1) == len(p2), "len(p1) != len(p2)"
             regression_x = linspace(p1, p2, step)
         else:
             regression_x = array(p1)
@@ -288,19 +282,18 @@ class MultiplyDLinearRegression(AbstractMultiplyDRegression):
         if self.k - 1 == 2:
             regression_x = meshgrid(*regression_x.T)
             regression_y = npsum([el1 * el2 for el1, el2 in zip(coeffs, regression_x)], axis=0) + self.coeffs[-1]
-            self.regression_xy = {"x": regression_x, "y": regression_y}
+            self.reg_xy = {"x": regression_x, "y": regression_y}
         elif self.k - 1 > 2:
-            self.regression_xy = {"x": regression_x,
-                                  "y": npsum([el1 * el2 for el1, el2 in zip(coeffs, regression_x)], axis=0)
-                                       + self.coeffs[-1]}
+            self.reg_xy = {"x": regression_x,
+                           "y": npsum([el1 * el2 for el1, el2 in zip(coeffs, regression_x)], axis=0) + self.coeffs[-1]}
         else:
-            self.regression_xy = {"x": regression_x.flatten(),
-                                  "y": (coeffs[0] * regression_x + self.coeffs[-1]).flatten()}
+            self.reg_xy = {"x": regression_x.flatten(),
+                           "y": (coeffs[0] * regression_x + self.coeffs[-1]).flatten()}
         return self
 
     def prediction(self):
-        reg_x = self.regression_xy["x"]
-        reg_y = self.regression_xy["y"]
+        reg_x = self.reg_xy["x"]
+        reg_y = self.reg_xy["y"]
         avx = array([self.data[i].mean() for i in range(self.m)])
         if self.k - 1 <= 2:
             D2 = array([[npsum(array([[(reg_x[i][k][m] - avx[i]) * (reg_x[j][k][m] - avx[j]) * self.__s.item(i, j)
