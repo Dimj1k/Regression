@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
+from .ABCRegression import Regression
 
 
 class Graph(ABC):
 
-    pt_curve = None
+    pt_curve: Regression
 
     @abstractmethod
     def __init__(self, curve):
