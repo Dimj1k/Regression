@@ -1,10 +1,15 @@
 from abc import ABC, abstractmethod
+from numpy import array
 
 
 class AbstractData(ABC):
 
-    Xnames, Yname, x, y = None, None, None, None
-    allNames, allData = None, None
+    Xnames: list
+    Yname: str
+    x: array
+    y: array
+    allNames: list
+    allData: list
 
     @abstractmethod
     def __init__(self, io):
