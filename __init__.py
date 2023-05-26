@@ -222,12 +222,12 @@ class Main(tk.Tk):
     def geometry(self):
         screen_width = int(self.winfo_screenwidth() // 1.5)
         screen_height = int(self.winfo_screenheight() // 1.5)
-        if screen_width > 1060 and screen_height > 600:
+        if screen_width > 1060 and screen_height > 700:
             super().geometry(f"{screen_width}x{screen_height}+"
                              f"{int(int(screen_width) * 1.5 // 5)}+{int(int(screen_height) * 1.5 // 6)}")
         else:
-            super().geometry("1060x600+265+150")
-        self.minsize(1060, 600)
+            super().geometry("1060x700+265+175")
+        self.minsize(1060, 700)
 
     def __find_eq(self):
         if self.__btns[0]["state"] == tk.DISABLED:
@@ -402,6 +402,7 @@ class Main(tk.Tk):
                     pack=dict(fill=tk.X))
         footer = self.Frame(self, bg="#ffffff", pack=dict(side=tk.BOTTOM, fill=tk.X))
         self.Label(footer, "Прикладная математика и информатика 2 курс. Тамбов 2023\n"
+                           "https://github.com/Dimj1k/Regression/tree/CourseWorkCode\n"
                            "Саратов Дмитрий Александрович. Малютин Кирилл Александрович. Ожогин Дмитрий Александрович",
                    self.font, justify=tk.RIGHT, bg="#ffffff", pack=dict(side=tk.RIGHT))
         self.mainloop()
