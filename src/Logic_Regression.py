@@ -182,6 +182,22 @@ class OneDHyperbolaRegression(OneDPolynomialRegression):
         return f"{self.coeffs[0]:.2f}+{self.coeffs[1]:.2f}/x".replace("+-", "-", 1)
 
 
+class OneDTrigonometricRegression(OneDPolynomialRegression):
+
+    def _least_squares(self):
+        coeffs = curve_fit(lambda x, a, b, c: a + b * sin(x) + c * x, self.x, self.y)[0]
+        return [[coeffs[2]], [coeffs[1]], [coeffs[0]]]
+
+    def _function_points(self, x):
+        return self.coeffs[0] + self.coeffs[1] * sin(x) + self.coeffs[2] * x
+
+    def __init__(self, x, y, name_x="x", name_y="y"):
+        super().__init__(2, x, y, name_x, name_y)
+
+    def __str__(self):
+        return f"{self.coeffs[0]:.2f}+{self.coeffs[1]:.2f}sin(x)+{self.coeffs[2]:.2f}x".replace("+-", "-", 1)
+
+
 class MultiplyDLinearRegression(AbstractMultiplyDRegression):
 
     __s: matrix

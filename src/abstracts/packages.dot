@@ -1,0 +1,8 @@
+digraph "packages" {
+rankdir=BT
+charset="utf-8"
+"Регрессионный анализ.src.abstracts.ABCGraph" [color="black", label=<Регрессионный анализ.src.abstracts.ABCGraph>, shape="box", style="solid"];
+"Регрессионный анализ.src.abstracts.ABCReadData" [color="black", label=<Регрессионный анализ.src.abstracts.ABCReadData>, shape="box", style="solid"];
+"Регрессионный анализ.src.abstracts.ABCRegression" [color="black", label=<Регрессионный анализ.src.abstracts.ABCRegression>, shape="box", style="solid"];
+"Регрессионный анализ.src.abstracts.ABCGraph" -> "Регрессионный анализ.src.abstracts.ABCRegression" [arrowhead="open", arrowtail="none"];
+}
