@@ -9,7 +9,7 @@ from tkinter.ttk import Combobox as tkCombobox
 class Main(tk.Tk):
     
     data: Data
-    regression: Regression
+    regression: Logic_Regression
     graph: Graph
 
     class LabelFrame(tk.LabelFrame):
@@ -247,6 +247,8 @@ class Main(tk.Tk):
                                    f" из данных" + \
                                    (" и найти парное уравнение регрессии" if len(used_vars) == 1 else "") + "\n"
             self.answer_str += f"Объясняющие переменные: {', '.join(used_vars)}\n"
+            self.answer_str += f"Коэффициент корреляции: {self.curve.r:.4f}\n" \
+                               f"Коэффициент детерминации: {self.curve.r2:.4f}\n"
             self.answer_str += f"Скорректированный коэффициент детерминации: {self.curve.adjR2:.4f}\n"
             best3adjr2 = self.curve.best_three_adjR2()
             names_x = self.curve.namesX
@@ -278,13 +280,14 @@ class Main(tk.Tk):
                 self.answer_str += f"Разница между корреляцией Пирсона: {self.curve.can_be_linear()}\n"
             self.answer_str += f"Коэффициент детерминации:" \
                                f" {self.curve.nonlin_r ** 2 if not self.curve.islinear else self.curve.r2:.4f}\n"
-            self.answer_str += f"f-критерий: {self.curve.f_fact:.4f}\nf-критерий табличный: {self.curve.f_table:.4f}\n"
+            self.answer_str += f"f-критерий: {self.curve.f_fact:.4f}\nf-критерий табличный: {self.curve.f_table:.2f}\n"
             self.answer_str += f"Средняя ошибка аппроксимации: {self.curve.approx_error()}\n"
             self.answer_str += "Уравнение регрессии статически" + (" " if self.curve.is_norm() else " не ")+"надежно\n"
         else:
             self.curve.correlation_f(sign)
+            self.answer_str += f"Средняя ошибка аппроксимации: {self.curve.approx_error()}\n"
             self.answer_str += f"f-критерий: {self.curve.f_fact_all:.4f}\n" \
-                               f"f-критерий табличный: {self.curve.f_table_all:.4f}\n"
+                               f"f-критерий табличный: {self.curve.f_table_all:.2f}\n"
             self.answer_str += f"f-критерий табличный для каждого параметра: {self.curve.f_table_each}\n"
             self.answer_str += "f-критерии по параметрам:\n"
             f_var_fact = self.curve.get_f_fact_each()
@@ -347,11 +350,11 @@ class Main(tk.Tk):
                           OneDLogarithmicRegression,
                           OneDExponencialRegression,
                           OneDPowerRegression,
-                          OneDHyperbolaRegression
+                          OneDHyperbolaRegression,
                           )
         self.__old_answer_str_for_multiDim = ""
-        self.functions_str = ("Линейная", "Параболическая", "Кубическая", "Экспонентная", "Логарифмическая",
-                              "Экспонциальная", "Степенная", "Гиперболическая")
+        self.functions_str = ("y=ax+b", "y=ax^2+bx+c", "y=ax^3+bx^2+cx+d", "y=a*exp(b)", "y=a+b*ln(x)",
+                              "y=exp(a+bx)", "y=exp(ax^b)", "y=a+b/x")
         self.__old_func_var = 0
         self.font = ("Times New Roman", 11)
         self.path = tk.StringVar()

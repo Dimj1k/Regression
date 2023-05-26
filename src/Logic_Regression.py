@@ -17,7 +17,8 @@ from numpy import (
     abs as npabs,
     log,
     any as npany,
-    argwhere
+    argwhere,
+    sin
 )
 from scipy.optimize import curve_fit
 from operator import itemgetter
@@ -201,19 +202,19 @@ class MultiplyDLinearRegression(AbstractMultiplyDRegression):
     def __solving(self, _atemp, _goodlst):
         self.variables = _goodlst[1] or [*_atemp, -1]
         self.data = self._tempname(self.variables, self.origdata)
-        self.n = self.data[0].size
-        self.m = len(self.data) - 1
+        self.__n = self.data[0].size
+        self.__m = len(self.data) - 1
         avy = self.data[-1].mean()
         coeffs = self._leastsquares()
-        self.coeffs = array([coeffs.item(i) for i in arange(self.m + 1)], dtype=float64)
+        self.coeffs = array([coeffs.item(i) for i in arange(self.__m + 1)], dtype=float64)
         del coeffs
-        self.f = array([npsum([self.coeffs[j] * self.data[j][i] for j in range(self.m)]) + self.coeffs[-1]
-                        for i in arange(self.n)])
+        self.f = array([npsum([self.coeffs[j] * self.data[j][i] for j in range(self.__m)]) + self.coeffs[-1]
+                        for i in arange(self.__n)])
         syy = npsum(square(self.data[-1] - avy))
-        self.se = npsum(square(self.data[-1] - self.f))
-        self.r2 = 1 - self.se / syy
+        self.__se = npsum(square(self.data[-1] - self.f))
+        self.r2 = 1 - self.__se / syy
         self.r = sqrt(self.r2)
-        self.adjR2 = 1 - (self.se / (self.n - self.m - 1)) / (syy / (self.n - 1))
+        self.adjR2 = 1 - (self.__se / (self.__n - self.__m - 1)) / (syy / (self.__n - 1))
         self.adjR2arr.append(self.adjR2)
         self.varsarr.append(self.variables)
 
@@ -237,8 +238,8 @@ class MultiplyDLinearRegression(AbstractMultiplyDRegression):
         self.origdata = array(x)
         self.namesX = names_x
         self.nameY = name_y
-        self.k = len(self.origdata[0])
-        self._s = self._subarrays(self.k)
+        self.__k = len(self.origdata[0])
+        self._s = self._subarrays(self.__k)
         self.adjR2arr = []
         self.varsarr = []
         self._attempment()
@@ -251,18 +252,19 @@ class MultiplyDLinearRegression(AbstractMultiplyDRegression):
         return list(map(lambda el: [el[0], el[1][0:-1]], self.bestadjR2arr[1:]))
 
     def __str__(self):
-        return ('+'.join([f"{self.coeffs[i]:.2f}x{self.variables[i] + 1}" for i in arange(self.m)]) +
-                f"+{(self.coeffs[self.m]):.2f}").replace("+-", '-')
+        return ('+'.join([f"{self.coeffs[i]:.2f}x{self.variables[i] + 1}" for i in arange(self.__m)]) +
+                f"+{(self.coeffs[self.__m]):.2f}").replace("+-", '-')
 
     def correlation_f(self, alpha):
-        self.f_table_all = self.get_f_table(alpha, self.n - self.m - 1, self.m)
-        self.f_fact_all = (self.adjR2 / (1 - self.adjR2)) * (self.n - self.m - 1) / self.m
+        self.f_table_all = self.get_f_table(alpha, self.__n - self.__m - 1, self.__m)
+        self.f_fact_all = (self.adjR2 / (1 - self.adjR2)) * (self.__n - self.__m - 1) / self.__m
         atrix = matrix(append(self.data[0:-1], [[1 for _ in arange(self.data[0].size)]], axis=0))
         self.__s = (atrix * atrix.transpose()) ** -1
         s = self.__s
-        se = self.se
-        self.f_table_each = self.get_f_table(alpha, self.n - self.m - 1, 1)
-        self.f_fact_each = [(self.coeffs[i] ** 2 / s.item(i, i)) / (se / (self.n - self.m - 1)) for i in range(self.m)]
+        se = self.__se
+        self.f_table_each = self.get_f_table(alpha, self.__n - self.__m - 1, 1)
+        self.f_fact_each = [(self.coeffs[i] ** 2 / s.item(i, i)) / (se / (self.__n - self.__m - 1))
+                            for i in range(self.__m)]
 
     def is_norm(self):
         return self.f_fact_all > self.f_table_all
@@ -273,17 +275,17 @@ class MultiplyDLinearRegression(AbstractMultiplyDRegression):
     def params_is_norm(self):
         return not npany(array(self.f_fact_each) < self.f_table_each)
 
-    def points(self, p1, p2=None, step=15):
-        if self.k - 1 <= 2:
-            regression_x = linspace(p1, p2, step)
+    def points(self, p1, p2=None):
+        if self.__k - 1 <= 2:
+            regression_x = linspace(p1, p2, 15)
         else:
             regression_x = array(p1)
         coeffs = self.coeffs[:-1]
-        if self.k - 1 == 2:
+        if self.__k - 1 == 2:
             regression_x = meshgrid(*regression_x.T)
             regression_y = npsum([el1 * el2 for el1, el2 in zip(coeffs, regression_x)], axis=0) + self.coeffs[-1]
             self.reg_xy = {"x": regression_x, "y": regression_y}
-        elif self.k - 1 > 2:
+        elif self.__k - 1 > 2:
             self.reg_xy = {"x": regression_x,
                            "y": npsum([el1 * el2 for el1, el2 in zip(coeffs, regression_x)], axis=0) + self.coeffs[-1]}
         else:
@@ -294,18 +296,18 @@ class MultiplyDLinearRegression(AbstractMultiplyDRegression):
     def prediction(self):
         reg_x = self.reg_xy["x"]
         reg_y = self.reg_xy["y"]
-        avx = array([self.data[i].mean() for i in range(self.m)])
-        if self.k - 1 <= 2:
+        avx = array([self.data[i].mean() for i in range(self.__m)])
+        if self.__k - 1 <= 2:
             D2 = array([[npsum(array([[(reg_x[i][k][m] - avx[i]) * (reg_x[j][k][m] - avx[j]) * self.__s.item(i, j)
-                                      for i in range(self.m)] for j in range(self.m)])) * (self.n - 1)
+                                       for i in range(self.__m)] for j in range(self.__m)])) * (self.__n - 1)
                          for k in range(15)] for m in range(15)])
         else:
             D2 = npsum(array([[(reg_x[i] - avx[i]) * (reg_x[j] - avx[j]) * self.__s.item(i, j)
-                              for i in range(self.m)] for j in range(self.m)])) * (self.n - 1)
-        sigma_sq = self.se / (self.n - self.m - 1)
-        rv = sqrt(self.f_table_each * (1 / self.n + D2 / (self.n - 1)) * sigma_sq)
+                               for i in range(self.__m)] for j in range(self.__m)])) * (self.__n - 1)
+        sigma_sq = self.__se / (self.__n - self.__m - 1)
+        rv = sqrt(self.f_table_each * (1 / self.__n + D2 / (self.__n - 1)) * sigma_sq)
         self.rv_up, self.rv_down = reg_y + rv, reg_y - rv
-        pred = sqrt(self.f_table_each * (1 + 1 / self.n + D2 / (self.n - 1)) * sigma_sq)
+        pred = sqrt(self.f_table_each * (1 + 1 / self.__n + D2 / (self.__n - 1)) * sigma_sq)
         self.pred_up, self.pred_down = reg_y + pred, reg_y - pred
 
     def approx_error(self):
@@ -318,4 +320,4 @@ class MultiplyDLinearRegression(AbstractMultiplyDRegression):
         return f"{mean(npabs((f - y[indexes]) / f)) * 100:.4f} %"
 
     def dim(self):
-        return self.m
+        return self.__m

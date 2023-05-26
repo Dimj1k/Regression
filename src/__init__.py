@@ -1,4 +1,4 @@
 from .Graph import *
-from .Regression import *
+from .Logic_Regression import *
 from .ReadData import *
 from .abstracts import *

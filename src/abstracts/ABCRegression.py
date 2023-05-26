@@ -90,6 +90,7 @@ class AbstractOneDRegression(ABC):
 class AbstractMultiplyDRegression(ABC):
 
     r: float
+    r2: float
     adjR2: float
     adjR2arr: list
     f_table_all: float
@@ -107,11 +108,15 @@ class AbstractMultiplyDRegression(ABC):
         return get_f_table_func(alpha, k1, k2)
 
     @abstractmethod
+    def approx_error(self):
+        pass
+
+    @abstractmethod
     def params_is_norm(self):
         pass
 
     @abstractmethod
-    def __init__(self, xname, yname):
+    def __init__(self, x, y):
         pass
 
     @abstractmethod
@@ -119,7 +124,7 @@ class AbstractMultiplyDRegression(ABC):
         pass
 
     @abstractmethod
-    def points(self, p1, p2, step):
+    def points(self, p1, p2):
         pass
 
     @abstractmethod
@@ -144,8 +149,4 @@ class AbstractMultiplyDRegression(ABC):
 
     @abstractmethod
     def get_unused_variables(self):
-        pass
-
-    @abstractmethod
-    def best_three_adjR2(self):
         pass
