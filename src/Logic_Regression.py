@@ -273,7 +273,7 @@ class MultiplyDLinearRegression(AbstractMultiplyDRegression):
 
     def correlation_f(self, alpha):
         self.f_table_all = self.get_f_table(alpha, self.__n - self.__m - 1, self.__m)
-        self.f_fact_all = (self.adjR2 / (1 - self.adjR2)) * (self.__n - self.__m - 1) / self.__m
+        self.f_fact_all = (self.r2 / (1 - self.r2)) * (self.__n - self.__m - 1) / self.__m
         atrix = matrix(append(self.data[0:-1], [[1 for _ in arange(self.data[0].size)]], axis=0))
         self.__s = (atrix * atrix.transpose()) ** -1
         s = self.__s
