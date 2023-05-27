@@ -355,7 +355,7 @@ class Main(tk.Tk):
                           )
         self.__old_answer_str_for_multiDim = ""
         self.functions_str = ("y=ax+b", "y=ax^2+bx+c", "y=ax^3+bx^2+cx+d", "y=a*exp(b)", "y=a+b*ln(x)",
-                              "y=exp(a+bx)", "y=exp(ax^b)", "y=a+b/x", "y=a+b*sin(x)+cx")
+                              "y=exp(a+bx)", "y=ax^b", "y=a+b/x", "y=a+b*sin(x)+cx")
         self.__old_func_var = 0
         self.font = ("Times New Roman", 11)
         self.path = tk.StringVar()
