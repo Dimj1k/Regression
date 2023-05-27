@@ -55,7 +55,7 @@ class Main(tk.Tk):
         @staticmethod
         def __show_data(data):
             for idx, data in data:
-                yield idx, str(data).rsplit("Name", maxsplit=1)[0], data.dtype != "object"
+                yield idx, str(data).rsplit("Name", maxsplit=1)[0], data.dtype not in ("object", "datetime64[ns]")
 
         @staticmethod
         def __create_checkbutton(main_frame_idx, idx, is_num):
