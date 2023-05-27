@@ -157,7 +157,7 @@ class Main(tk.Tk):
         widget.pack_forget()
 
     def __set_info(self):
-        self.answer_str = f"Файл: {self.data.filename}\n(Переменная) - (соответсвующая переменная в уравнении)\n"
+        self.answer_str = f"Файл: {self.data.filename}\n(Обозначение) - (Переменная в уравнении)\n"
         for key, el in self.data.names().items():
             self.answer_str += f"{el} - {key}\n"
         self.answer.set(self.answer_str.strip())
