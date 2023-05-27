@@ -55,7 +55,7 @@ class Main(tk.Tk):
         @staticmethod
         def __show_data(data):
             for idx, data in data:
-                yield idx, str(data).rsplit("Name", maxsplit=1)[0], data.dtype != "object"
+                yield idx, str(data).rsplit("Name", maxsplit=1)[0], data.dtype not in ("object", "datetime64[ns]")
 
         @staticmethod
         def __create_checkbutton(main_frame_idx, idx, is_num):
@@ -157,7 +157,7 @@ class Main(tk.Tk):
         widget.pack_forget()
 
     def __set_info(self):
-        self.answer_str = f"Файл: {self.data.filename}\n(Переменная) - (соответсвующая переменная в уравнении)\n"
+        self.answer_str = f"Файл: {self.data.filename}\n(Обозначение) - (Переменная в уравнении)\n"
         for key, el in self.data.names().items():
             self.answer_str += f"{el} - {key}\n"
         self.answer.set(self.answer_str.strip())
@@ -222,12 +222,12 @@ class Main(tk.Tk):
     def geometry(self):
         screen_width = int(self.winfo_screenwidth() // 1.5)
         screen_height = int(self.winfo_screenheight() // 1.5)
-        if screen_width > 1060 and screen_height > 600:
+        if screen_width > 1060 and screen_height > 700:
             super().geometry(f"{screen_width}x{screen_height}+"
                              f"{int(int(screen_width) * 1.5 // 5)}+{int(int(screen_height) * 1.5 // 6)}")
         else:
-            super().geometry("1060x600+265+150")
-        self.minsize(1060, 600)
+            super().geometry("1060x700+265+175")
+        self.minsize(1060, 700)
 
     def __find_eq(self):
         if self.__btns[0]["state"] == tk.DISABLED:
@@ -355,7 +355,7 @@ class Main(tk.Tk):
                           )
         self.__old_answer_str_for_multiDim = ""
         self.functions_str = ("y=ax+b", "y=ax^2+bx+c", "y=ax^3+bx^2+cx+d", "y=a*exp(b)", "y=a+b*ln(x)",
-                              "y=exp(a+bx)", "y=exp(ax^b)", "y=a+b/x", "y=a+b*sin(x)+cx")
+                              "y=exp(a+bx)", "y=ax^b", "y=a+b/x", "y=a+b*sin(x)+cx")
         self.__old_func_var = 0
         self.font = ("Times New Roman", 11)
         self.path = tk.StringVar()
@@ -402,6 +402,7 @@ class Main(tk.Tk):
                     pack=dict(fill=tk.X))
         footer = self.Frame(self, bg="#ffffff", pack=dict(side=tk.BOTTOM, fill=tk.X))
         self.Label(footer, "Прикладная математика и информатика 2 курс. Тамбов 2023\n"
+                           "https://github.com/Dimj1k/Regression/tree/CourseWorkCode\n"
                            "Саратов Дмитрий Александрович. Малютин Кирилл Александрович. Ожогин Дмитрий Александрович",
                    self.font, justify=tk.RIGHT, bg="#ffffff", pack=dict(side=tk.RIGHT))
         self.mainloop()
