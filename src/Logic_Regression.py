@@ -153,17 +153,17 @@ class OneDExponencialRegression(OneDPolynomialRegression):
 class OneDPowerRegression(OneDPolynomialRegression):
 
     def _least_squares(self):
-        coeffs = curve_fit(lambda x, a, b: a * x ** b, self.x, self.y)[0]
+        coeffs = curve_fit(lambda x, a, b: a * (x ** b), self.x, self.y)[0]
         return [[coeffs[1]], [coeffs[0]]]
 
     def _function_points(self, x):
-        return exp(self.coeffs[0] * x ** self.coeffs[1])
+        return self.coeffs[0] * x ** self.coeffs[1]
 
     def __init__(self, x, y, name_x="x", name_y="y"):
         super().__init__(2, x, y, name_x, name_y)
 
     def __str__(self):
-        return f"exp({self.coeffs[0]:.2f}x^({self.coeffs[1]:.2f}))"
+        return f"{self.coeffs[0]:.2f}x^({self.coeffs[1]:.2f})"
 
 
 class OneDHyperbolaRegression(OneDPolynomialRegression):
