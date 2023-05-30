@@ -286,7 +286,7 @@ class MultiplyDLinearRegression(AbstractMultiplyDRegression):
         return self.f_fact_all > self.f_table_all
 
     def get_f_fact_each(self):
-        return {f"x{var}": f_fact_var for var, f_fact_var in enumerate(self.f_fact_each, start=1)}
+        return {f"x{var + 1}": f_fact_var for var, f_fact_var in zip(self.variables, self.f_fact_each)}
 
     def params_is_norm(self):
         return not npany(array(self.f_fact_each) < self.f_table_each)
