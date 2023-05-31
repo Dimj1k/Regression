@@ -222,12 +222,12 @@ class Main(tk.Tk):
     def geometry(self):
         screen_width = int(self.winfo_screenwidth() // 1.5)
         screen_height = int(self.winfo_screenheight() // 1.5)
-        if screen_width > 1060 and screen_height > 700:
+        if screen_width > 1070 and screen_height > 700:
             super().geometry(f"{screen_width}x{screen_height}+"
                              f"{int(int(screen_width) * 1.5 // 5)}+{int(int(screen_height) * 1.5 // 6)}")
         else:
-            super().geometry("1060x700+265+175")
-        self.minsize(1060, 700)
+            super().geometry("1070x700+265+175")
+        self.minsize(1070, 700)
 
     def __find_eq(self):
         if self.__btns[0]["state"] == tk.DISABLED:
@@ -354,8 +354,8 @@ class Main(tk.Tk):
                           OneDTrigonometricRegression,
                           )
         self.__old_answer_str_for_multiDim = ""
-        self.functions_str = ("y=ax+b", "y=ax^2+bx+c", "y=ax^3+bx^2+cx+d", "y=a*exp(b)", "y=a+b*ln(x)",
-                              "y=exp(a+bx)", "y=ax^b", "y=a+b/x", "y=a+b*sin(x)+cx")
+        self.functions_str = ("y=ax+b", "y=ax^2+bx+c", "y=ax^3+bx^2+cx+d", "y=a*exp(bx)+c", "y=a+b*ln(x)",
+                              "y=exp(a+bx)+c", "y=ax^b+c", "y=a+b/x", "y=a+b*sin(x)+cx")
         self.__old_func_var = 0
         self.font = ("Times New Roman", 11)
         self.path = tk.StringVar()

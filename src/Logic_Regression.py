@@ -105,17 +105,17 @@ class OneDPolynomialRegression(AbstractOneDRegression):
 class OneDExponentRegression(OneDPolynomialRegression):
 
     def _least_squares(self):
-        coeffs = curve_fit(lambda x, a, b: a * exp(b * x), self.x, self.y)[0]
-        return [[coeffs[1]], [coeffs[0]]]
+        coeffs = curve_fit(lambda x, a, b, c: a * exp(b * x) + c, self.x, self.y)[0]
+        return [[coeffs[2]], [coeffs[1]], [coeffs[0]]]
 
     def _function_points(self, x):
-        return self.coeffs[0] * exp(self.coeffs[1] * x)
+        return self.coeffs[0] * exp(self.coeffs[1] * x) + self.coeffs[2]
 
     def __init__(self, x, y, name_x="x", name_y="y"):
         super().__init__(2, x, y, name_x, name_y)
 
     def __str__(self):
-        return f"{self.coeffs[0]:.2f}e^({self.coeffs[1]:.2f}x)"
+        return f"{self.coeffs[0]:.2f}e^({self.coeffs[1]:.2f}x)+{self.coeffs[2]:.2f}".replace("+-", "-")
 
 
 class OneDLogarithmicRegression(OneDPolynomialRegression):
@@ -137,33 +137,33 @@ class OneDLogarithmicRegression(OneDPolynomialRegression):
 class OneDExponencialRegression(OneDPolynomialRegression):
 
     def _least_squares(self):
-        coeffs = curve_fit(lambda x, a, b: exp(a + b * x), self.x, self.y)[0]
-        return [[coeffs[1]], [coeffs[0]]]
+        coeffs = curve_fit(lambda x, a, b, c: exp(a + b * x) + c, self.x, self.y)[0]
+        return [[coeffs[2]], [coeffs[1]], [coeffs[0]]]
 
     def _function_points(self, x):
-        return exp(self.coeffs[0] + self.coeffs[1] * x)
+        return exp(self.coeffs[0] + self.coeffs[1] * x) + self.coeffs[2]
 
     def __init__(self, x, y, name_x="x", name_y="y"):
         super().__init__(2, x, y, name_x, name_y)
 
     def __str__(self):
-        return f"exp({self.coeffs[0]:.2f}+{self.coeffs[1]:.2f}x)".replace("+-", "-")
+        return f"exp({self.coeffs[0]:.2f}+{self.coeffs[1]:.2f}x)+{self.coeffs[2]:.2f}".replace("+-", "-")
 
 
 class OneDPowerRegression(OneDPolynomialRegression):
 
     def _least_squares(self):
-        coeffs = curve_fit(lambda x, a, b: a * (x ** b), self.x, self.y)[0]
-        return [[coeffs[1]], [coeffs[0]]]
+        coeffs = curve_fit(lambda x, a, b, c: a * (x ** b) + c, self.x, self.y)[0]
+        return [[coeffs[2]], [coeffs[1]], [coeffs[0]]]
 
     def _function_points(self, x):
-        return self.coeffs[0] * x ** self.coeffs[1]
+        return self.coeffs[0] * x ** self.coeffs[1] + self.coeffs[2]
 
     def __init__(self, x, y, name_x="x", name_y="y"):
         super().__init__(2, x, y, name_x, name_y)
 
     def __str__(self):
-        return f"{self.coeffs[0]:.2f}x^({self.coeffs[1]:.2f})"
+        return f"{self.coeffs[0]:.2f}x^({self.coeffs[1]:.2f})+{self.coeffs[2]:.2f}".replace("+-", "-", 1)
 
 
 class OneDHyperbolaRegression(OneDPolynomialRegression):
@@ -273,7 +273,7 @@ class MultiplyDLinearRegression(AbstractMultiplyDRegression):
 
     def correlation_f(self, alpha):
         self.f_table_all = self.get_f_table(alpha, self.__n - self.__m - 1, self.__m)
-        self.f_fact_all = (self.adjR2 / (1 - self.adjR2)) * (self.__n - self.__m - 1) / self.__m
+        self.f_fact_all = (self.r2 / (1 - self.r2)) * (self.__n - self.__m - 1) / self.__m
         atrix = matrix(append(self.data[0:-1], [[1 for _ in arange(self.data[0].size)]], axis=0))
         self.__s = (atrix * atrix.transpose()) ** -1
         s = self.__s
@@ -286,7 +286,7 @@ class MultiplyDLinearRegression(AbstractMultiplyDRegression):
         return self.f_fact_all > self.f_table_all
 
     def get_f_fact_each(self):
-        return {f"x{var}": f_fact_var for var, f_fact_var in enumerate(self.f_fact_each, start=1)}
+        return {f"x{var + 1}": f_fact_var for var, f_fact_var in zip(self.variables, self.f_fact_each)}
 
     def params_is_norm(self):
         return not npany(array(self.f_fact_each) < self.f_table_each)

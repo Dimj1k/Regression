@@ -43,7 +43,10 @@ class Data(AbstractData):
         del self.allData, self.allNames
 
     def names(self):
-        return {**{f"x{i}": el for i, el in enumerate(self.Xnames, start=1)}, "y": self.Yname}
+        if self.dim() > 1:
+            return {**{f"x{i}": el for i, el in enumerate(self.Xnames, start=1)}, "y": self.Yname}
+        else:
+            return {"x": self.Xnames[0], "y": self.Yname}
 
     def __getitem__(self, item):
         return self.allNames[item], self.data[self.allNames[item]]
